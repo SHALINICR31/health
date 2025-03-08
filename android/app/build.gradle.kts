@@ -23,7 +23,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID.
         applicationId = "com.example.health"
-        minSdk = 23
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

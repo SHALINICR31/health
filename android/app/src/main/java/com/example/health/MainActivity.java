@@ -1,22 +1,20 @@
 package com.example.health; // Change this based on your package name
 
-import android.app.Application;
+import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.dart.DartExecutor;
-import io.flutter.FlutterInjector;
+import io.flutter.plugins.GeneratedPluginRegistrant;
 
-public class MainActivity extends Application {
+public class MainActivity extends FlutterActivity {
     @Override
-    public void onCreate() {
-        super.onCreate();
+    public void configureFlutterEngine(FlutterEngine flutterEngine) {
+        super.configureFlutterEngine(flutterEngine);
+        GeneratedPluginRegistrant.registerWith(flutterEngine);
 
-        // Initialize FlutterEngine
-        FlutterEngine flutterEngine = new FlutterEngine(this);
+        // You can execute Dart code here if needed
         flutterEngine.getDartExecutor().executeDartEntrypoint(
                 DartExecutor.DartEntrypoint.createDefault()
         );
 
-        // Optional: Pre-warm Flutter Engine for faster startup
-        FlutterInjector.instance().flutterLoader().startInitialization(this);
     }
 }

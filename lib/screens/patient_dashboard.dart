@@ -24,30 +24,39 @@ class _PatientDashboardState extends State<PatientDashboard> {
 
   void _startListening() async {
     bool available = await _speech.initialize(
-      onStatus: (status) => print("Status: $status"),
-      onError: (error) => print("Error: $error"),
+      onStatus: (status) => print("🎤 Status: $status"),
+      onError: (error) => print("❌ Error: $error"),
     );
     if (available) {
       setState(() => _isListening = true);
       _speech.listen(
         onResult: (result) {
           if (result.finalResult) {
+            print("🗣️ Heard from mic: ${result.recognizedWords}");
             setState(() => _command = result.recognizedWords);
-            _processCommand(_command); // ✅ Process only final speech result
+            _processCommand(_command);
           }
         },
       );
+    } else {
+      print("❌ Speech recognition not available!");
     }
   }
+
 
   void _stopListening() {
     setState(() => _isListening = false);
     _speech.stop();
   }
 
-  void _processCommand(String command) async {
-    final apiKey = dotenv.env['OPENAI_API_KEY']; // ✅ Load API key securely
-    const apiUrl = "https://api.openai.com/v1/chat/completions"; // ✅ Correct API endpoint
+  Future<void> _processCommand(String command) async {
+    final apiKey = dotenv.env['OPENAI_API_KEY']; // ✅ Secure API key
+    if (apiKey == null || apiKey.isEmpty) {
+      print("❌ Error: OpenAI API key not found in .env file!");
+      return;
+    }
+
+    const apiUrl = "https://api.openai.com/v1/chat/completions";
 
     var response = await http.post(
       Uri.parse(apiUrl),
@@ -65,24 +74,28 @@ class _PatientDashboardState extends State<PatientDashboard> {
 
     if (response.statusCode == 200) {
       var result = jsonDecode(response.body);
-      print("AI Response: ${result['choices'][0]['message']['content']}");
-      _navigateBasedOnCommand(result['choices'][0]['message']['content']);
+      String aiResponse = result['choices'][0]['message']['content'];
+      print("🤖 AI Response: $aiResponse");
+      _navigateBasedOnCommand(aiResponse);
     } else {
-      print("Error: ${response.body}");
+      print("❌ API Error: ${response.body}");
     }
   }
 
   void _navigateBasedOnCommand(String command) {
-    if (command.toLowerCase().contains("book appointment")) {
+    String lowerCommand = command.toLowerCase();
+    if (lowerCommand.contains("book appointment")) {
       Navigator.pushNamed(context, "/book_appointment");
-    } else if (command.toLowerCase().contains("view medical records")) {
+    } else if (lowerCommand.contains("view medical records")) {
       Navigator.pushNamed(context, "/medical_records");
-    } else if (command.toLowerCase().contains("chat with doctor")) {
+    } else if (lowerCommand.contains("chat with doctor")) {
       Navigator.pushNamed(context, "/chat_doctor");
-    } else if (command.toLowerCase().contains("health monitoring")) {
+    } else if (lowerCommand.contains("health monitoring")) {
       Navigator.pushNamed(context, "/health_monitoring");
-    } else if (command.toLowerCase().contains("emergency call")) {
+    } else if (lowerCommand.contains("emergency call")) {
       Navigator.pushNamed(context, "/emergency_call");
+    } else {
+      print("⚠️ Command not recognized: $command");
     }
   }
 
@@ -95,33 +108,30 @@ class _PatientDashboardState extends State<PatientDashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, "/book_appointment"),
-              child: const Text("Book Appointment"),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, "/medical_records"),
-              child: const Text("View Medical Records"),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, "/chat_doctor"),
-              child: const Text("Chat with Doctor"),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, "/health_monitoring"),
-              child: const Text("Health Monitoring"),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, "/emergency_call"),
-              child: const Text("Emergency Call"),
-            ),
+            _buildNavButton("Book Appointment", "/book_appointment"),
+            _buildNavButton("View Medical Records", "/medical_records"),
+            _buildNavButton("Chat with Doctor", "/chat_doctor"),
+            _buildNavButton("Health Monitoring", "/health_monitoring"),
+            _buildNavButton("Emergency Call", "/emergency_call"),
             const SizedBox(height: 20),
             FloatingActionButton(
               onPressed: _isListening ? _stopListening : _startListening,
-              child: Icon(_isListening ? Icons.mic_off : Icons.mic),
+              backgroundColor: _isListening ? Colors.red : Colors.blue,
+              child: Icon(_isListening ? Icons.mic_off : Icons.mic, color: Colors.white),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildNavButton(String text, String route) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: ElevatedButton(
+        onPressed: () => Navigator.pushNamed(context, route),
+        style: ElevatedButton.styleFrom(padding: EdgeInsets.all(12)),
+        child: Text(text, style: TextStyle(fontSize: 16)),
       ),
     );
   }

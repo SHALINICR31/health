@@ -39,7 +39,9 @@ dependencies:
   cloud_firestore: ^5.6.4
   flutter_riverpod: ^2.6.1
   flutter_dotenv: ^5.2.1
-
+  permission_handler: ^11.4.0
+  flutter_sound: ^9.2.13
+  file_picker: ^5.2.5  # ✅ To select audio files
 dev_dependencies:
   flutter_test:
     sdk: flutter
