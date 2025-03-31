@@ -41,9 +41,21 @@ flutter {
     source = "../.."
 }
 dependencies {
-    // Import the Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7") // Use the latest version
+    implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0") // Optional, for older components
+    implementation ("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.20")
 
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
+    implementation ("io.flutter:flutter_embedding_debug:1.0.0")// Use the correct version
+
+    implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
 
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies

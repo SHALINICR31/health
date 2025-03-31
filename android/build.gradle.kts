@@ -5,10 +5,11 @@ allprojects {
     }
 }
 plugins {
-    // ...
+
+    id ("dev.flutter.flutter-gradle-plugin") version "1.0.0"
 
     // Add the dependency for the Google services Gradle plugin
-    id("com.google.gms.google-services") version "4.4.2" apply false
+    id("com.google.gms.google-services") version "4.4.2"
 
 }
 val newBuildDir: Directory = rootProject.layout.buildDirectory.dir("../../build").get()
